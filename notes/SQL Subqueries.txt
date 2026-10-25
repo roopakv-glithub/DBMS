@@ -1,0 +1,323 @@
+SQL Subqueries:
+1. Set Mmbership - in, not in
+2. Set Comparison - some, all
+3. Test for empty relations - exixts, not exists
+4. Set operations - union, intersect, minus
+
+SQL> select * from stu;
+
+     REGNO NAME             CGPA
+---------- ---------- ----------
+       101 sai               7.3
+       102 jai               8.2
+       103                   8.9
+       104 raj               9.9
+       106 david             9.5
+
+SQL> select * from stu_hobby;
+
+     REGNO HOBBY
+---------- ----------
+       101 reading
+       102 playing
+       102 singing
+       104
+       105 rahul
+
+Membership - in
+
+list the student details whose hobby is 'playing
+
+SQL> select * from stu where regno in (select regno from stu_hobby where hobby='playing');
+
+     REGNO NAME             CGPA
+---------- ---------- ----------
+       102 jai               8.2
+
+
+Membership - not in
+
+list the student details whose hobby is 'playing'
+
+SQL> select * from stu where regno not in (select regno from stu_hobby where hobby='playing');
+
+     REGNO NAME             CGPA
+---------- ---------- ----------
+       106 david             9.5
+       103                   8.9
+       101 sai               7.3
+       104 raj               9.9
+
+Set Operations:
+
+SQL> select * from stu natural full outer join stu_hobby;
+
+     REGNO NAME             CGPA HOBBY
+---------- ---------- ---------- ----------
+       101 sai               7.3 reading
+       102 jai               8.2 playing
+       102 jai               8.2 singing
+       104 raj               9.9
+       105                       rahul
+       106 david             9.5
+       103                   8.9
+
+7 rows selected.
+
+Union:
+
+List the student details who has academic or hobby information
+
+SQL> (select regno from stu) union (select regno from stu_hobby);
+
+     REGNO
+----------
+       101
+       102
+       103
+       104
+       105
+       106
+
+6 rows selected.
+
+
+Intersection:
+
+List the student details who has academic and hobby information
+
+SQL> (select regno from stu) intersect (select regno from stu_hobby);
+
+     REGNO
+----------
+       101
+       102
+       104
+
+Set Diffierence:
+
+List the student details who has academic but not hobby information
+
+SQL> (select regno from stu) minus (select regno from stu_hobby);
+
+     REGNO
+----------
+       103
+       106
+
+Set Diffierence:
+
+List the student details who has hobby but not academic information
+
+SQL> (select regno from stu_hobby) minus (select regno from stu);
+
+     REGNO
+----------
+       105
+
+Set Comparison:
+Some
+
+List the student details who have scored more cgpa greater than atleast one student
+
+SQL> select regno from stu where cgpa > some (select cgpa from stu);
+
+     REGNO
+----------
+       102
+       103
+       104
+       106
+
+SQL> select * from stu;
+
+     REGNO NAME             CGPA
+---------- ---------- ----------
+       101 sai               7.3
+       102 jai               8.2
+       103                   8.9
+       104 raj               9.9
+       106 david             9.5
+
+List the student details who have scored more cgpa greater than all the students
+
+SQL> select regno from stu where cgpa > all (select cgpa from stu);
+
+no rows selected
+
+List the student details who have scored maximum cgpa
+
+SQL> select regno from stu where cgpa >= all (select cgpa from stu);
+
+     REGNO
+----------
+       104
+
+SQL> select regno from stu where cgpa >= some (select cgpa from stu);
+
+     REGNO
+----------
+       101
+       102
+       103
+       104
+       106
+
+Test foe Empty relations - exists
+
+list the details if there exists a regno 104
+
+SQL> select * from stu where exists (select regno from stu where regno=104);
+
+     REGNO NAME             CGPA
+---------- ---------- ----------
+       101 sai               7.3
+       102 jai               8.2
+       103                   8.9
+       104 raj               9.9
+       106 david             9.5
+
+list the details if there exists a regno 105
+
+SQL> select * from stu where exists (select regno from stu where regno=105);
+
+no rows selected
+
+list the details if there doesnot exists a regno 105
+
+SQL> select * from stu where not exists (select regno from stu where regno=105);
+
+     REGNO NAME             CGPA
+---------- ---------- ----------
+       101 sai               7.3
+       102 jai               8.2
+       103                   8.9
+       104 raj               9.9
+       106 david             9.5
+
+list the details if there exists a cgpa 9
+
+SQL> select * from stu where exists (select regno from stu where cgpa=9);
+
+no rows selected
+
+SQL> select * from stu;
+
+     REGNO NAME             CGPA
+---------- ---------- ----------
+       101 sai               7.3
+       102 jai               8.2
+       103                   8.9
+       104 raj               9.9
+       106 david             9.5
+
+SQL> select * from stu_hobby;
+
+     REGNO HOBBY
+---------- ----------
+       101 reading
+       102 playing
+       102 singing
+       104
+       105 rahul
+
+Subqueries with update operation:
+
+update the cgpa of all students, if he has a hobby;
+
+SQL> update stu set cgpa=cgpa+0.1 where regno in (select regno from stu_hobby);
+
+3 rows updated.
+
+SQL> select * from stu;
+
+     REGNO NAME             CGPA
+---------- ---------- ----------
+       101 sai               7.4
+       102 jai               8.3
+       103                   8.9
+       104 raj                10
+       106 david             9.5
+
+SQL> commit;
+
+Commit complete.
+
+delete the student academic details with no hobby
+
+SQL> delete from stu where regno not in (select regno from stu_hobby);
+
+2 rows deleted.
+
+SQL> select * from stu;
+
+     REGNO NAME             CGPA
+---------- ---------- ----------
+       101 sai               7.4
+       102 jai               8.3
+       104 raj                10
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

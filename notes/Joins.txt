@@ -1,0 +1,164 @@
+Join
+1. Identify attributes
+2. Tables
+3. check common attribute
+
+
+1. List the custname, loanno, branchname - loan, borrower
+
+SQL> select * from depositor natural right outer join borrower;
+
+CUSTNAME            ACCTNO     LOANNO
+--------------- ---------- ----------
+sai                    102        501
+anaya                  101        502
+aryan                  103        503
+aryan                  103        504
+seetha                            501
+
+SQL> select custname, loanno, branchname from loan natural join borrower;
+
+CUSTNAME            LOANNO BRANCHNAME
+--------------- ---------- ---------------
+sai                    501 hal
+seetha                 501 hal
+aryan                  504 vandalur
+aryan                  503 vandalur
+anaya                  502 ring road
+
+SQL> select borrower.custname, borrower.loanno, loan.branchname from loan,borrower where borrower.loanno=loan.loanno;
+
+CUSTNAME            LOANNO BRANCHNAME
+--------------- ---------- ---------------
+sai                    501 hal
+seetha                 501 hal
+aryan                  504 vandalur
+aryan                  503 vandalur
+anaya                  502 ring road
+
+SQL> select b.custname, b.loanno, l.branchname from loan l,borrower b where b.loanno=l.loanno;
+
+CUSTNAME            LOANNO BRANCHNAME
+--------------- ---------- ---------------
+sai                    501 hal
+seetha                 501 hal
+aryan                  504 vandalur
+aryan                  503 vandalur
+anaya                  502 ring road
+
+2. List the account number with maximum balance and its customer name
+
+SQL> select max(balance) from account;
+
+MAX(BALANCE)
+------------
+        7764
+
+SQL> select acctno from account where balance=(select max(balance) from account);
+
+    ACCTNO
+----------
+       105
+
+SQL> select * from depositor;
+
+CUSTNAME       ACCTNO
+---------- ----------
+aditya            104
+pooja             105
+sai               102
+anaya             101
+aryan             103
+
+SQL> select custname from account natural join depositor where balance=(select max(balance) from account);
+
+CUSTNAME
+----------
+pooja
+
+SQL> select custname, acctno, balance from account natural join depositor where balance=(select max(balance) from account);
+
+CUSTNAME       ACCTNO    BALANCE
+---------- ---------- ----------
+pooja             105       7764
+
+3. List the customer street with his account number - customer (custst), depositor(acctno) , common attribute(custname)
+SQL> select acctno, custst from depositor natural join customer;
+
+    ACCTNO CUSTST
+---------- ----------
+       104 janpath
+       105 avadi
+       102 jayanagar
+       101 rajpath
+       103 vandalur
+
+
+
+4. List the customer street with customer's account number and the branch name of the account.
+
+customer (custst), depositor(acctno), account(branchname)
+common attributes - 
+custname(depositor,customer)
+acctno(depositor, account)
+
+SQL> select acctno, custst, branchname from customer natural join depositor natural join account;
+
+    ACCTNO CUSTST     BRANCHNAME
+---------- ---------- ----------
+       104 janpath    ring road
+       105 avadi      vandalur
+       102 jayanagar  hal
+       101 rajpath    anna salai
+       103 vandalur   vandalur
+
+
+5. List the account balance with the branch name and the branch city
+account(balance, branchname)
+branch(branchname, branchcity)
+common attribute - branchname
+SQL> select balance, branchname, branchcity from account natural join branch;
+
+   BALANCE BRANCHNAME BRANCHCITY
+---------- ---------- ----------
+      2332 anna salai chennai
+      1221 hal        bangalore
+      4433 vandalur   chennai
+      5445 ring road  delhi
+      7764 vandalur   chennai
+
+
+customer(custname, custst, custcity)pk
+branch(branchname, branchcity, assets)pk
+account(acctno, branchname, balance) pk, fk
+loan(loanno, branchname, amount) pk, fk
+depositor(custname, acctno)fk, fk
+borrower(custname, loanno)fk, fk
+
+6. List the loan number with the customer name, his city along with the loan number and its branch city
+borrower (custname, loanno)
+customer (custname, custcity)
+loan 
+branch
+
+common - custname (borrower, customer)
+common - branchname (loan, branch)
+common - loanno (borrower, loan)
+
+SQL> select custname, loanno, custcity, branchcity from customer natural join borrower natural join loan natural join branch;
+
+CUSTNAME            LOANNO CUSTCITY   BRANCHCITY
+--------------- ---------- ---------- ----------
+sai                    501 bangalore  bangalore
+anaya                  502 delhi      delhi
+seetha                 501 bangalore  bangalore
+aryan                  503 chennai    chennai
+aryan                  504 chennai    chennai
+
+
+
+
+
+
+
+
